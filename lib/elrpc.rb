@@ -75,7 +75,7 @@ module Elrpc
     def _start_logger
       return Thread.start do
         loop do
-          ret = @io.readline
+          ret = @io.gets
           break if ret.nil?
           @logger.puts(ret) if @logger
         end
@@ -85,12 +85,12 @@ module Elrpc
     def start
       @io = IO.popen(@cmd)
       if port.nil?
-        @port = @io.readline.to_i
+        @port = @io.gets.to_i
       end
       @output = nil
       @thread = _start_logger
       # wait for port
-      timeout(4) do
+      Timeout::timeout(4) do
         loop do
           begin
             socket = TCPSocket.open("127.0.0.1", @port)
